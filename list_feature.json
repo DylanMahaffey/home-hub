@@ -1,0 +1,46 @@
+{
+    "lists": [
+        {
+            "_id": "123456",
+            "title": "My List",
+            "yellow_pages_url": null
+        },
+        {
+            "_id": "123456",
+            "title": "Chores",
+            "yellow_pages_url": null
+        },
+        {
+            "_id": "123458",
+            "title": "Walmart",
+            "yellow_pages_url": null
+        },
+        {
+            "_id": "123459",
+            "title": "Costco",
+            "yellow_pages_url": null
+        },
+        {
+            "_id": "123459",
+            "title": "Whole Foods",
+            "yellow_pages_url": null
+        }
+    ],
+    "list_items": [
+        {
+            "_id": "11111",
+            "list_id": "123458",
+            "item": "Eggs (Aldi)",
+            "in_cart": false
+        }
+    ],
+    "order": [
+        "Get store ? query & location (yellow pages scrape)",
+        "POST new list ? {title, url}",
+        "POST new item ? title",
+        "PATCH item",
+        "DELETE item",
+        "DELETE items on complete ? list_id | (in_cart == true)"
+    ],
+    "future mvp ideas": ["store url", "color code items", "Move items between lists"]
+}
