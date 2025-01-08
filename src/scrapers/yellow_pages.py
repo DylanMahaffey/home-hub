@@ -1,34 +1,31 @@
 from ..models.business_models import BusinessProfile, Address, BusinessHours
+from playwright.async_api import async_playwright
 
 # This method is currently returning mock data. 
 # Will eventually webscrape to get the data
-def get_business_locations(query: str, zip: str):
-    return [
-        get_mock_business(query, zip)
-    ]
-    
-def get_mock_business(query, zip):
-    mock_business = BusinessProfile()
-    mock_business._id = "123456"
-    mock_business.name = query
-    mock_business.yellow_pages_url = "https://www.yellowpages.com/fresno-ca/mip/costco-768540"
-    mock_business.url = "https://www.costco.com/warehouse-locations/fresno-CA-657.html"
-    
-    address = Address()
-    address.street = "265 W. Menlo"
-    address.city = "Fresno"
-    address.state = "Ca"
-    address.zip = zip
-    mock_business.address = address
-    
-    hours = BusinessHours()
-    hours.sunday = "11am - 8pm"
-    hours.monday = "11am - 8pm"
-    hours.tuesday = "11am - 8pm"
-    hours.wednesday = "11am - 8pm"
-    hours.thursday = "11am - 8pm"
-    hours.friday = "11am - 8pm"
-    hours.saturday = "11am - 8pm"
-    mock_business.hours = hours
-    
-    return mock_business
+async def get_business_locations(query: str, zip: str):
+    async with async_playwright() as p:
+        base_url = "https://www.yellowpages.com"
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        await page.goto(f"{base_url}/search?search_terms={query}&geo_location_terms={zip}")
+        context = page.locator(".result")
+        content = []
+        for el in await context.all():
+            b = BusinessProfile()
+            b.ypid = await el.get_attribute("data-ypid")
+            b.name = query
+            b.yellow_pages_url = base_url + await el.locator("a.business-name").get_attribute("href")
+            address = Address()
+            address.street = await el.locator(".street-address").inner_text()
+            local = await el.locator(".locality").inner_text()
+            split = local.split(",")
+            address.city = split[0]
+            state_zip = split[1].split(" ")
+            address.state = state_zip[1]
+            address.zip = state_zip[2]
+            b.address = address
+            content.append(b)
+            
+        await browser.close()
+        return content

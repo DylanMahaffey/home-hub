@@ -5,11 +5,11 @@ from .business_models import BusinessProfile
 
 class UserList(BaseModel):
     _id: Optional[str]
-    title: Optional[str]
+    title: str
     # business: Optional[BusinessProfile]
     
 class ListItem(BaseModel):
     _id: Optional[str]
-    list_id: Optional[str]
-    text: Optional[str]
-    in_cart: Optional[bool]
+    list_id: str
+    text: str
+    in_cart: bool = False
